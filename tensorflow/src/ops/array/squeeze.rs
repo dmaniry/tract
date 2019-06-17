@@ -4,7 +4,7 @@ use crate::tfpb::node_def::NodeDef;
 use crate::model::ParsingContext;
 
 pub fn squeeze(_ctx: &ParsingContext, pb: &NodeDef) -> TractResult<Box<InferenceOp>> {
-    let squeeze_dims = pb.get_attr_opt_list_int("squeeze_dims")?;
+    let squeeze_dims = pb.get_attr_opt_list_int("axis")?;
     if let Some(mut squeeze_dims) = squeeze_dims {
         if squeeze_dims.len() > 0 {
             squeeze_dims.sort();
