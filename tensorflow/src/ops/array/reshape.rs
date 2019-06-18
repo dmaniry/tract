@@ -8,7 +8,7 @@ pub struct Reshape<T: Datum>(PhantomData<T>);
 
 pub fn reshape(_ctx: &ParsingContext, pb: &NodeDef) -> TractResult<Box<InferenceOp>> {
     let dtype = pb.get_attr_datum_type("T")?;
-    Ok(boxed_new!(Reshape(DatumType::I32)()))
+    Ok(boxed_new!(Reshape(dtype)()))
 }
 
 impl<T: Datum> Reshape<T> {
