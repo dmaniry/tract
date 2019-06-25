@@ -1,8 +1,10 @@
 use tract_core::internal::*;
 use tract_core::ops::cnn::PaddingSpec;
 use tract_core::ops::nn::{DataFormat, LayerSoftmax};
+use tract_core::ops as tractops;
 
-use crate::model::TfOpRegister;
+
+use crate::model::{TfOpRegister, ParsingContext};
 use crate::tfpb::node_def::NodeDef;
 
 pub mod conv2d;
@@ -21,6 +23,8 @@ pub fn register_all_ops(reg: &mut TfOpRegister) {
     reg.insert("Relu6", |_, _| Ok(Box::new(Relu6::default())));
     reg.insert("Sigmoid", with_T!(::tract_core::ops::nn::Sigmoid));
     reg.insert("Softmax", |_, _| Ok(Box::new(LayerSoftmax::new(1))));
+    reg.insert("Elu", |_, _| Ok(Box::new(tractops::nn::Elu::new(1.0))));
+    reg.insert("LeakyRelu", leaky_relu);
     reg.insert("SpaceToBatchND", s2b::space_to_batch_nd);
     reg.insert("BatchToSpaceND", s2b::batch_to_space_nd);
 }
@@ -51,4 +55,9 @@ pub fn padding(pb: &NodeDef) -> TractResult<PaddingSpec> {
         b"SAME" => Ok(PaddingSpec::SameUpper),
         s => Err(format!("unsupported Padding {}", String::from_utf8_lossy(s)))?,
     }
+}
+
+pub fn leaky_relu(_ctx: &ParsingContext, pb: &NodeDef) -> TractResult<Box<InferenceOp>> {
+    let alpha: f32 = pb.get_attr_opt_float("alpha")?.unwrap_or(0.01);
+    Ok(Box::new(tractops::nn::LeakyRelu::new(alpha)))
 }

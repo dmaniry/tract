@@ -32,6 +32,9 @@ pub fn register_all_ops(reg: &mut TfOpRegister) {
     reg.insert("Identity", |_, _| Ok(Box::new(tract_core::ops::identity::Identity)));
     reg.insert("NoOp", |_, _| Ok(Box::new(Noop)));
     reg.insert("Placeholder", |_, _| Ok(Box::new(::tract_core::ops::source::Source::new())));
+    // default ignored for now
+    //reg.insert("PlaceholderWithDefault", |_, _| Ok(Box::new(::tract_core::ops::source::Source::new())));
+
 }
 
 fn cast(_ctx: &ParsingContext, node: &NodeDef) -> TractResult<Box<InferenceOp>> {
